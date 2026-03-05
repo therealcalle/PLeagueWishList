@@ -50,6 +50,43 @@
     </div>
   </div>
 
+  <!-- Edit Wish Modal -->
+  <div id="edit-modal" class="modal hidden">
+    <div class="modal-backdrop"></div>
+    <div class="modal-content">
+      <h3>Edit Wish</h3>
+      <form id="edit-wish-form" class="wish-form">
+        <input type="hidden" id="edit-wish-id">
+        <div class="form-group">
+          <label for="edit-wish-item">Item Name</label>
+          <input type="text" id="edit-wish-item" required autocomplete="off" maxlength="100">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="edit-wish-category">Category</label>
+            <select id="edit-wish-category" required></select>
+          </div>
+          <div class="form-group">
+            <label for="edit-wish-priority">Priority</label>
+            <select id="edit-wish-priority">
+              <option value="normal">Normal</option>
+              <option value="high">★ High</option>
+              <option value="low">Low</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="edit-wish-notes">Notes <span class="label-hint">(optional)</span></label>
+          <input type="text" id="edit-wish-notes" placeholder="e.g. need for build, any roll..." maxlength="200" autocomplete="off">
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-ghost" id="edit-cancel">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- Main App -->
   <div id="app" class="screen hidden">
     <header class="app-header">

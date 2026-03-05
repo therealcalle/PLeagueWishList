@@ -89,6 +89,15 @@ class WishlistApp {
       confirmMessage: document.getElementById('confirm-message'),
       confirmOk: document.getElementById('confirm-ok'),
       confirmCancel: document.getElementById('confirm-cancel'),
+      // Edit modal
+      editModal: document.getElementById('edit-modal'),
+      editForm: document.getElementById('edit-wish-form'),
+      editId: document.getElementById('edit-wish-id'),
+      editItem: document.getElementById('edit-wish-item'),
+      editCategory: document.getElementById('edit-wish-category'),
+      editPriority: document.getElementById('edit-wish-priority'),
+      editNotes: document.getElementById('edit-wish-notes'),
+      editCancel: document.getElementById('edit-cancel'),
     };
   }
 
@@ -97,6 +106,9 @@ class WishlistApp {
 
     // Wish form category dropdown
     this.el.wishCategory.innerHTML = options;
+
+    // Edit form category dropdown
+    this.el.editCategory.innerHTML = options;
 
     // Filter category dropdown
     this.el.filterCategory.innerHTML =
@@ -555,6 +567,7 @@ class WishlistApp {
               ? `<button class="btn btn-ghost btn-sm" data-action="unfulfill" data-id="${w.id}">Undo</button>`
               : `<button class="btn btn-success btn-sm" data-action="fulfill" data-id="${w.id}">✓ Found</button>`
             }
+            <button class="btn btn-ghost btn-sm" data-action="edit" data-id="${w.id}" title="Edit">✎</button>
             <button class="btn btn-danger btn-sm" data-action="delete" data-id="${w.id}" title="Delete">✕</button>
           </div>
         </div>`;
@@ -639,11 +652,19 @@ class WishlistApp {
       if (action === 'fulfill') this.handleFulfill(id);
       else if (action === 'unfulfill') this.handleUnfulfill(id);
       else if (action === 'delete') this.handleDelete(id);
+      else if (action === 'edit') this.handleEdit(id);
     });
 
     // Close confirm modal on backdrop click
     this.el.confirmModal.querySelector('.modal-backdrop').addEventListener('click', () => {
       this.el.confirmModal.classList.add('hidden');
+    });
+
+    // Edit modal events
+    this.el.editForm.addEventListener('submit', (e) => this.handleEditSubmit(e));
+    this.el.editCancel.addEventListener('click', () => this.el.editModal.classList.add('hidden'));
+    this.el.editModal.querySelector('.modal-backdrop').addEventListener('click', () => {
+      this.el.editModal.classList.add('hidden');
     });
   }
 
@@ -732,6 +753,51 @@ class WishlistApp {
         this.showToast(`Removed "${wish.item_name}"`, 'info');
       }
     );
+  }
+
+  // ------------------------------------------
+  // Edit Wish
+  // ------------------------------------------
+  handleEdit(id) {
+    const wish = this.wishes.find(w => w.id === id);
+    if (!wish) return;
+
+    this.el.editId.value = wish.id;
+    this.el.editItem.value = wish.item_name;
+    this.el.editCategory.value = wish.category;
+    this.el.editPriority.value = wish.priority;
+    this.el.editNotes.value = wish.notes || '';
+    this.el.editModal.classList.remove('hidden');
+    this.el.editItem.focus();
+  }
+
+  async handleEditSubmit(e) {
+    e.preventDefault();
+    const id = this.el.editId.value;
+    const updates = {
+      item_name: this.el.editItem.value.trim(),
+      category: this.el.editCategory.value,
+      priority: this.el.editPriority.value,
+      notes: this.el.editNotes.value.trim(),
+    };
+
+    if (!updates.item_name) return;
+
+    const { error } = await this.db
+      .from('wishes')
+      .update(updates)
+      .eq('id', id);
+
+    if (error) {
+      this.showToast('Failed to update wish', 'error');
+      return;
+    }
+
+    const wish = this.wishes.find(w => w.id === id);
+    if (wish) Object.assign(wish, updates);
+    this.el.editModal.classList.add('hidden');
+    this.render();
+    this.showToast(`Updated "${updates.item_name}"`, 'success');
   }
 
   // ------------------------------------------
