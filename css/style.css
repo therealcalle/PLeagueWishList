@@ -889,10 +889,6 @@ body {
 
 /* --- Sidebar Player List --- */
 .overview-sidebar {
-  position: sticky;
-  top: 7rem;
-  max-height: calc(100vh - 10rem);
-  overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
