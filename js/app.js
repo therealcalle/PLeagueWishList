@@ -354,9 +354,12 @@ class WishlistApp {
         byCat.get(groupKey).push(w);
       }
 
-      // Sort categories by their defined order
+      // Sort categories: those with high-priority items first, then by defined order
       const catOrder = CATEGORIES.map(c => c.id);
       const sortedCats = Array.from(byCat.entries()).sort((a, b) => {
+        const aHasHigh = a[1].some(w => w.priority === 'high') ? 0 : 1;
+        const bHasHigh = b[1].some(w => w.priority === 'high') ? 0 : 1;
+        if (aHasHigh !== bHasHigh) return aHasHigh - bHasHigh;
         const ai = a[0] === GEM_GROUP ? catOrder.indexOf('gem-str')
           : a[0] === UNIQUE_GROUP ? catOrder.indexOf('unique-armour')
           : catOrder.indexOf(a[0]);
