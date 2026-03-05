@@ -345,6 +345,11 @@ class WishlistApp {
       const uniqueIds = new Set(['unique-armour', 'unique-weapon', 'unique-accessory', 'unique-flask', 'unique-jewel']);
       const GEM_GROUP = '_gems';
       const UNIQUE_GROUP = '_uniques';
+
+      // Sort all open items by priority first
+      const pOrder = {high: 0, normal: 1, low: 2};
+      open.sort((a, b) => (pOrder[a.priority] ?? 1) - (pOrder[b.priority] ?? 1));
+
       const byCat = new Map();
       for (const w of open) {
         const groupKey = gemIds.has(w.category) ? GEM_GROUP
